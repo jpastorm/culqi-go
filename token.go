@@ -14,7 +14,7 @@ const (
 type Token struct {
 	CardNumber      string            `json:"card_number"`
 	Cvv             string            `json:"cvv"`
-	ExpirationMonth string            `json:"expiration_month"`
+	ExpirationMonth int               `json:"expiration_month"`
 	ExpirationYear  string            `json:"expiration_year"`
 	Email           string            `json:"email"`
 	Metadata        map[string]string `json:"metadata"`
