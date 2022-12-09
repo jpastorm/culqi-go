@@ -70,7 +70,7 @@ func (tk *Token) Create() (*ResponseToken, error) {
 		return nil, err
 	}
 
-	res, err := do("POST", TokensPostURL, nil, bytes.NewBuffer(j))
+	res, err := doSecure("POST", TokensPostURL, nil, bytes.NewBuffer(j))
 	if err != nil {
 		return nil, err
 	}

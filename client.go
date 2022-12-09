@@ -92,3 +92,57 @@ func do(method, endpoint string, params url.Values, body io.Reader) ([]byte, err
 
 	return nil, ErrUnexpected
 }
+
+func doSecure(method, endpoint string, params url.Values, body io.Reader) ([]byte, error) {
+	if len(params) != 0 {
+		endpoint += "?" + params.Encode()
+	}
+
+	req, err := http.NewRequest(method, endpoint, body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+keyInstance.PublicKey)
+
+	c := &http.Client{}
+	res, err := c.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	obj, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	switch res.StatusCode {
+	case 400:
+		err = ErrInvalidRequest
+	case 401:
+		err = ErrAuthentication
+	case 422:
+		err = ErrParameter
+	case 402:
+		err = ErrCard
+	case 429:
+		err = ErrLimitAPI
+	case 404:
+		err = ErrResource
+	case 500, 503:
+		err = ErrAPI
+	}
+
+	if err != nil {
+		err = fmt.Errorf("%v: %s", err, string(obj))
+		return nil, err
+	}
+
+	if res.StatusCode >= 200 && res.StatusCode <= 206 {
+		return obj, nil
+	}
+
+	return nil, ErrUnexpected
+}
