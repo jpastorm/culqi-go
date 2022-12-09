@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	tokensURL = baseURL + "/tokens"
+	tokensURL     = baseURL + "/tokens"
+	TokensPostURL = baseSecureURL + "/tokens"
 )
 
 // Token objeto request
@@ -69,7 +70,7 @@ func (tk *Token) Create() (*ResponseToken, error) {
 		return nil, err
 	}
 
-	res, err := do("POST", tokensURL, nil, bytes.NewBuffer(j))
+	res, err := do("POST", TokensPostURL, nil, bytes.NewBuffer(j))
 	if err != nil {
 		return nil, err
 	}
